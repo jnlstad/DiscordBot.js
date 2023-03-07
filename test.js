@@ -1,4 +1,3 @@
-const math = require("mathjs")
 const { REST, Routes } = require('discord.js');
 const { TOKEN, CLIENT_ID } = require('./token.js');
 const { pong } = require('./Commands/ping.js');
@@ -13,7 +12,11 @@ const commands = [
   {    
     name: 'hello',
     description: 'Replies with a random Hello from a set list',
-  }
+  },
+  {    
+    name: 'test3',
+    description: 'Replies with your ID',
+  },
 ];
 
 
@@ -46,10 +49,18 @@ client.on('interactionCreate', async interaction => {
     await interaction.reply(pong);
   }
 
+
   if (interaction.commandName === 'hello') {
-    await interaction.deferReply();
-    await wait(1000)
-    await interaction.editReply('Hallo')
+    const randomHelloReply = new randomHello();
+    await interaction.reply({ content: randomHelloReply.reply, ephmeral: true})
+  }
+
+  if (interaction.commandName === 'test3') {
+    const message = await interaction.user;
+    console.log(message.id)
+    // await interaction.reply({ content: message.user.id, ephmeral: true})
+    await interaction.reply({ content: message.id + "\n" 
+                              + message.username + "#" + message.discriminator , ephemeral: true})
   }
 });
 
