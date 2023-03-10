@@ -1,3 +1,10 @@
-const pong = 'pong'
+const { SlashCommandBuilder } = require('@discordjs/builders');
 
-exports.pong = pong
+module.exports = {
+    data: new SlashCommandBuilder()
+        .setName('ping')
+        .setDescription('Replies with Pong!'),
+    async execute(interaction) {
+        await interaction.reply('Pong!');
+    },
+};
