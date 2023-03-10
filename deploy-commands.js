@@ -10,6 +10,8 @@ const CLIENT_ID = process.env.CLIENT_ID;
 const GUILD_ID = process.env.GUILD_ID;
 
 
+
+
 const commands = [];
 const commandsPath = path.join(__dirname, 'commands');
 const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js'));
@@ -24,6 +26,17 @@ for (const file of commandFiles) {
 }
 
 const rest = new REST({ version: '10' }).setToken(TOKEN);
+
+//wipes all commands
+rest.delete(Routes.applicationGuildCommand(CLIENT_ID, GUILD_ID, 'commandId'))
+	.then(() => console.log('Successfully deleted guild command'))
+	.catch(console.error);
+
+// for global commands
+rest.delete(Routes.applicationCommand(CLIENT_ID, 'commandId'))
+	.then(() => console.log('Successfully deleted application command'))
+	.catch(console.error);
+
 
 (async () => {
 	try {
@@ -41,3 +54,5 @@ const rest = new REST({ version: '10' }).setToken(TOKEN);
 		console.error(error);
 	}
 })();
+
+
