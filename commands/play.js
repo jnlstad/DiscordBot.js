@@ -1,7 +1,5 @@
 const { SlashCommandBuilder } = require("@discordjs/builders")
-const { MessageEmbed } = require("discord.js")
-const { QueryType, useMasterPlayer } = require("discord-player")
-const { Player } = require("discord-player")
+const { useMasterPlayer } = require("discord-player")
 
 
 module.exports = {
