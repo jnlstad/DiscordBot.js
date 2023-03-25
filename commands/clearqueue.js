@@ -4,12 +4,13 @@ const { useQueue } = require("discord-player")
 
 module.exports = {
 	data: new SlashCommandBuilder()
-		.setName("queue")
-		.setDescription("Shows the current queue"),
+		.setName("skip_queue")
+		.setDescription("Skips to the last song in the queue"),
 	execute: async (interaction) => {
+        
+        //get the queue, also checks
         const queue = useQueue(interaction.guildId);
         
-        console.log(queue)
         if(!queue){
             await interaction.reply(`There is no queue in this server`)
             return;
@@ -22,18 +23,7 @@ module.exports = {
             return;
         }
 
-        
-        // Show the first 10 songs in the queue
-        queue_message = `Current queue:\n`;
-        let i = 0;
-        while (i < 10 && i < tracks.length){
-            queue_message += `${i+1}. **${tracks[i].title} - ${tracks[i].author}**\n`;
-            i++;
-        }
-        if (tracks.length > 10){
-            queue_message += `*...and ${tracks.length - 10} more*`;
-        }
+        queue.node.skipTo(tracks.length-1)
+        await interaction.reply({content:`skipped to the last song`, ephemeral: true})
 
-
-        await interaction.reply({content: queue_message, ephemeral: true});
     }}

@@ -52,50 +52,47 @@ for (const file of eventFiles) {
 	}
 }
 
-console.log(client.commands)
 client.login(TOKEN)
 
 
-///Discord Player
+///Discord Music Player
 const player = new Player(client, {
   ytdlOptions: {
     quality: "highestaudio",
     highWaterMark: 1 << 25
-  }
+  },
+
 })
+
 
 
 player.events.on('playerStart', (queue, track) => {
   // Emitted when the player starts to play a song
   queue.metadata.channel.send(`Started playing: **${track.title} - ${track.author}**`);
 });
-  
+
 player.events.on('audioTrackAdd', (queue, track) => {
   // Emitted when the player adds a single song to its queue
-  queue.metadata.channel.send(`Track **${track.title} - ${track.author}** queued`);
+  queue.metadata.channel.send(`Track **${track.title} - ${track.author}** queued by **${track.requestedBy.username}**`);
 });
-  
+
 player.events.on('audioTracksAdd', (queue, track) => {
   // Emitted when the player adds multiple songs to its queue
   queue.metadata.channel.send(`Multiple Track's queued`);
 });
-  
+
 player.events.on('playerSkip', (queue, track) => {
   // Emitted when the audio player fails to load the stream for a song
   queue.metadata.channel.send(`Skipping **${track.title} - ${track.author}** due to an issue!`);
 });
-  
+
 player.events.on('disconnect', (queue) => {
   // Emitted when the bot leaves the voice channel
-  queue.metadata.channel.send('Looks like my job here is done, leaving now!');
+  queue.metadata.channel.send(`There's been 5 minutes of inactivity, so my job here is done`);
 });
 
 player.events.on('emptyChannel', (queue) => {
   // Emitted when the voice channel has been empty for the set threshold
   // Bot will automatically leave the voice channel with this event
-  queue.metadata.channel.send(`Leaving because no vc activity for the past 5 minutes`);
-});
-player.events.on('emptyQueue', (queue) => {
-  // Emitted when the player queue has finished
-  queue.metadata.channel.send('Queue finished!');
+  queue.metadata.channel.send(`Leaving because I was alone for the past 5 minutes :(`);
 });

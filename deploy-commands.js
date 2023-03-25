@@ -16,6 +16,7 @@ const commands = [];
 const commandsPath = path.join(__dirname, 'commands');
 const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js'));
 
+function deployCommands(){
 for (const file of commandFiles) {
 	try{
         const command = require(`./commands/${file}`);
@@ -54,5 +55,6 @@ rest.delete(Routes.applicationCommand(CLIENT_ID, 'commandId'))
 		console.error(error);
 	}
 })();
+}
 
-
+deployCommands()

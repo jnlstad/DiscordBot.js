@@ -1,5 +1,5 @@
 const { SlashCommandBuilder } = require("@discordjs/builders")
-const { useMasterPlayer } = require("discord-player")
+const { useMasterPlayer, useQueue } = require("discord-player")
 
 
 module.exports = {
@@ -20,7 +20,7 @@ module.exports = {
         const query = interaction.options.getString("query", true)
 
 
-        await interaction.deferReply();
+        await interaction.deferReply({ephemeral: true});
         const searchResult = await player.search(query, {requestedBy: interaction.user});
 
         if (!searchResult || !searchResult.tracks.length){
@@ -33,9 +33,16 @@ module.exports = {
                         metadata: interaction
                     }
                 });
-                await interaction.editReply(`Loading your Track`);
+
+                // Prevent leaving upon queue empty then requeue
+                console.log(`restarted leaveOnEnd`)
+                useQueue(interaction.guildId).options.leaveOnEnd = false;
+                useQueue(interaction.guildId).options.leaveOnEndCooldown = 5 * 60 * 1000;
+                useQueue(interaction.guildId).options.leaveOnEnd = true;
+
+                await interaction.editReply({content:`Loading your Track`, ephemeral: true});
             } catch (e) {
-                return interaction.followUp(`Something went wrong ${e}`)
+                return interaction.followUp({content:`Something went wrong ${e}`, ephemeral: false})
             }
         }
         
