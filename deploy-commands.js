@@ -1,5 +1,5 @@
 const dotenv = require('dotenv');
-const { REST, Routes} = require('discord.js');
+const { REST, Routes } = require('discord.js');
 const fs = require('node:fs');
 const path = require('node:path');
 
@@ -44,7 +44,7 @@ rest.delete(Routes.applicationCommand(CLIENT_ID, 'commandId'))
 
 		// The put method is used to fully refresh all commands in the guild with the current set
 		const data = await rest.put(
-			Routes.applicationGuildCommands(CLIENT_ID, GUILD_ID),
+			Routes.applicationCommands(CLIENT_ID),
 			{ body: commands },
 		);
 

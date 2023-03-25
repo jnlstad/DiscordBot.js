@@ -2,13 +2,23 @@ const fs = require('node:fs');
 const path = require('node:path');
 const dotenv = require('dotenv');
 const Discord = require('discord.js');
-const { Client, GatewayIntentBits  } = require('discord.js');
+const { Client, GatewayIntentBits } = require('discord.js');
+const { Player } = require("discord-player");
+
 
 // Load .env file
 dotenv.config()
 const TOKEN = process.env.TOKEN;
 
-const client = new Client({ intents: [GatewayIntentBits.Guilds]});
+const client = new Client({ 
+    intents: [
+      GatewayIntentBits.Guilds,
+      GatewayIntentBits.GuildMembers,
+      GatewayIntentBits.GuildVoiceStates,
+      GatewayIntentBits.GuildMessages,
+      GatewayIntentBits.MessageContent,
+    ]});
+
 
 
 client.commands = new Discord.Collection();
@@ -27,6 +37,8 @@ for (const file of commandFiles) {
   }
 }
 
+
+
 const eventsPath = path.join(__dirname, 'events');
 const eventFiles = fs.readdirSync(eventsPath).filter(file => file.endsWith('.js'));
 
@@ -42,3 +54,47 @@ for (const file of eventFiles) {
 
 console.log(client.commands)
 client.login(TOKEN)
+
+
+///Discord Player
+const player = new Player(client, {
+  ytdlOptions: {
+    quality: "highestaudio",
+    highWaterMark: 1 << 25
+  }
+})
+
+
+player.events.on('playerStart', (queue, track) => {
+  // Emitted when the player starts to play a song
+  queue.metadata.channel.send(`Started playing: **${track.title}**`);
+});
+  
+player.events.on('audioTrackAdd', (queue, track) => {
+  // Emitted when the player adds a single song to its queue
+  queue.metadata.channel.send(`Track **${track.title}** queued`);
+});
+  
+player.events.on('audioTracksAdd', (queue, track) => {
+  // Emitted when the player adds multiple songs to its queue
+  queue.metadata.channel.send(`Multiple Track's queued`);
+});
+  
+player.events.on('playerSkip', (queue, track) => {
+  // Emitted when the audio player fails to load the stream for a song
+  queue.metadata.channel.send(`Skipping **${track.title}** due to an issue!`);
+});
+  
+player.events.on('disconnect', (queue) => {
+  // Emitted when the bot leaves the voice channel
+  queue.metadata.channel.send('Looks like my job here is done, leaving now!');
+});
+player.events.on('emptyChannel', (queue) => {
+  // Emitted when the voice channel has been empty for the set threshold
+  // Bot will automatically leave the voice channel with this event
+  queue.metadata.channel.send(`Leaving because no vc activity for the past 5 minutes`);
+});
+player.events.on('emptyQueue', (queue) => {
+  // Emitted when the player queue has finished
+  queue.metadata.channel.send('Queue finished!');
+});
