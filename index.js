@@ -3,7 +3,7 @@ const path = require('node:path');
 const dotenv = require('dotenv');
 const Discord = require('discord.js');
 const { Client, GatewayIntentBits } = require('discord.js');
-const { Player } = require("discord-player");
+const { Player, useQueue } = require("discord-player")
 
 
 // Load .env file
@@ -85,6 +85,11 @@ player.events.on('playerSkip', (queue, track) => {
   // Emitted when the audio player fails to load the stream for a song
   queue.metadata.channel.send(`Skipping **${track.title} - ${track.author}** due to an issue!`);
 });
+
+// player.events.once('emptyQueue', () => {
+//   useQueue(interaction.guildId).options.leaveOnEnd = true;
+// });
+
 
 player.events.on('disconnect', (queue) => {
   // Emitted when the bot leaves the voice channel
