@@ -5,7 +5,7 @@ const { useQueue } = require("discord-player")
 module.exports = {
 	data: new SlashCommandBuilder()
 		.setName("skip_queue")
-		.setDescription("Skips to the last song in the queue"),
+		.setDescription("Skips the entire queue"),
 	execute: async (interaction) => {
         
         //get the queue, also checks
@@ -23,7 +23,7 @@ module.exports = {
             return;
         }
 
-        queue.node.skipTo(tracks.length-1)
-        await interaction.reply({content:`skipped to the last song`, ephemeral: true})
+        queue.delete();
+        await interaction.reply({content:`skipped the queue`, ephemeral: true});
 
     }}

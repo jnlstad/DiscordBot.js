@@ -31,17 +31,6 @@ function deployAllCommands () {
 
 	const rest = new REST({ version: '10' }).setToken(TOKEN);
 
-	//wipes all commands
-	rest.delete(Routes.applicationGuildCommand(CLIENT_ID, GUILD_ID, 'commandId'))
-	.then(() => console.log('Successfully deleted guild command'))
-	.catch(console.error);
-
-	// for global commands
-	rest.delete(Routes.applicationCommand(CLIENT_ID, 'commandId'))
-	.then(() => console.log('Successfully deleted application command'))
-	.catch(console.error);
-
-
 	(async () => {
 	try {
 		console.log(`Started refreshing ${commands.length} application (/) commands.`);

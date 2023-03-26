@@ -1,5 +1,5 @@
 const { SlashCommandBuilder } = require("@discordjs/builders")
-const { useMasterPlayer, useQueue } = require("discord-player")
+const { useMasterPlayer } = require("discord-player")
 
 
 module.exports = {
@@ -33,12 +33,6 @@ module.exports = {
                         metadata: interaction
                     }
                 });
-
-                // Prevent leaving upon queue empty then requeue
-                useQueue(interaction.guildId).options.leaveOnEnd = false;
-                useQueue(interaction.guildId).options.volume = 50;
-                useQueue(interaction.guildId).options.leaveOnEndCooldown = 0.5 * 60 * 1000;
-
 
                 await interaction.editReply({content:`Loading your Track`, ephemeral: true});
             } catch (e) {

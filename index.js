@@ -72,8 +72,12 @@ let queueEmpty = false;
 player.events.on('playerStart', (queue, track) => {
   // Emitted when the player starts to play a song
   queueEmpty = false;
-  useQueue(queue.metadata.guildId).options.leaveOnEnd = false;
   queue.metadata.channel.send(`Started playing: **${track.title} - ${track.author}**`);
+});
+
+player.events.once('audioTrackAdd', (queue) => {
+  // leaveOnEnd is set to false, so the player will not leave the channel when the queue is empty
+  useQueue(queue.metadata.guildId).options.leaveOnEnd = false;
 });
 
 player.events.on('audioTrackAdd', (queue, track) => {
