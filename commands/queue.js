@@ -9,7 +9,6 @@ module.exports = {
 	execute: async (interaction) => {
         const queue = useQueue(interaction.guildId);
         
-        console.log(queue)
         if(!queue){
             await interaction.reply(`There is no queue in this server`)
             return;

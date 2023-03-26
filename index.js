@@ -2,9 +2,11 @@ const fs = require('node:fs');
 const path = require('node:path');
 const dotenv = require('dotenv');
 const Discord = require('discord.js');
-const { Client, GatewayIntentBits } = require('discord.js');
+const { Client, GatewayIntentBits, Collection } = require('discord.js');
 const { Player, useQueue } = require("discord-player")
 
+
+const collection = new Collection();
 
 // Load .env file
 dotenv.config()
@@ -68,16 +70,25 @@ const player = new Player(client, {
 
 player.events.on('playerStart', (queue, track) => {
   // Emitted when the player starts to play a song
+  useQueue(queue.metadata.guildId).options.leaveOnEnd = false;
   queue.metadata.channel.send(`Started playing: **${track.title} - ${track.author}**`);
 });
 
 player.events.on('audioTrackAdd', (queue, track) => {
   // Emitted when the player adds a single song to its queue
+  
+  // bulk delete queued by and started playing messages
+  queue.metadata.channel.bulkDelete(collection.sweep(user => user.id === "491197056866844683"))
+  .then(messages => console.log(`Bulk deleted ${messages.size} messages`))
+  .catch(console.error);
+
+  useQueue(queue.metadata.guildId).options.leaveOnEnd = false;
   queue.metadata.channel.send(`Track **${track.title} - ${track.author}** queued by **${track.requestedBy.username}**`);
 });
 
 player.events.on('audioTracksAdd', (queue, track) => {
   // Emitted when the player adds multiple songs to its queue
+  useQueue(queue.metadata.guildId).options.leaveOnEnd = false;
   queue.metadata.channel.send(`Multiple Track's queued`);
 });
 
@@ -86,8 +97,8 @@ player.events.on('playerSkip', (queue, track) => {
   queue.metadata.channel.send(`Skipping **${track.title} - ${track.author}** due to an issue!`);
 });
 
-// player.events.once('emptyQueue', () => {
-//   useQueue(interaction.guildId).options.leaveOnEnd = true;
+// player.events.once('emptyQueue', (queue) => {
+//   useQueue(queue.metadata.guildId).options.leaveOnEnd = true;
 // });
 
 
