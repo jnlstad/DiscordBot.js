@@ -35,7 +35,8 @@ module.exports = {
                 });
 
                 // Prevent leaving upon queue empty then requeue
-                console.log(`Song Queued in ${interaction.guild.name}`)
+                useQueue(interaction.guildId).options.leaveOnEnd = false;
+                useQueue(interaction.guildId).options.volume = 50;
                 useQueue(interaction.guildId).options.leaveOnEndCooldown = 0.5 * 60 * 1000;
 
 
