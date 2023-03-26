@@ -1,3 +1,5 @@
 tempCodeRunnerFile.js
-.ENV
+.env
 /node_modules
+/deprecated_comnmands
+/deprecated_events
