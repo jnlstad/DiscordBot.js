@@ -98,20 +98,20 @@ player.events.on('playerSkip', (queue, track) => {
 });
 
 
-player.events.on('emptyQueue', (queue) => {
-  queueEmpty = true;
+// player.events.on('emptyQueue', (queue) => {
+//   queueEmpty = true;
 
-  setTimeout(leave, 1 * 60 * 1000)
-  function leave() {
-    if (queueEmpty) {
-      queue.player.destroy();
-      queue.metadata.channel.send(`There was a minute of inactivity, so I quit`);
-      return;
-    } else {
-      return;
-    }
-  }
-});
+//   setTimeout(leave, 1 * 60 * 1000)
+//   function leave() {
+//     if (queueEmpty) {
+//       queue.player.destroy();
+//       queue.metadata.channel.send(`There was a minute of inactivity, so I quit`);
+//       return;
+//     } else {
+//       return;
+//     }
+//   }
+// });
 
 
 player.events.on('emptyChannel', (queue) => {

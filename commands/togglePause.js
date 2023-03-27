@@ -4,7 +4,7 @@ const { useQueue } = require("discord-player")
 
 module.exports = {
 	data: new SlashCommandBuilder()
-        .setName("toggle_pause")
+        .setName("pause_toggle")
         .setDescription("toggles whether the player is paused or not."),
 
     async execute(interaction) {
