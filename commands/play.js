@@ -5,7 +5,7 @@ const { useMasterPlayer } = require("discord-player")
 module.exports = {
 	data: new SlashCommandBuilder()
 		.setName("play")
-		.setDescription("play a song from YouTube.")
+		.setDescription("play a song from YouTube Onii-chan!")
         .addStringOption(option =>
             option
                 .setName("query")
