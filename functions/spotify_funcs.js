@@ -4,7 +4,7 @@ const fsPromises = require('fs').promises;
 
 
 
-dotenv.config({ path: 'env_files\\.spotify.env' });
+dotenv.config({ path: 'env_files/.spotify.env' });
 const SPOTIFY_CLIENT_ID = process.env.SPOTIFY_CLIENT_ID;
 const SPOTIFY_CLIENT_SECRET = process.env.SPOTIFY_CLIENT_SECRET;
 
@@ -45,10 +45,14 @@ const spotify_track_data_get = async (link, spotify_token) => {
         });
         return response;
     } catch (error) {
-        return ''
+        // return ''
+        const errorcode = error.response.data.error.status
+        if(errorcode === 401){
+          throw 'Invalid Spotify Token'
         // throw error;
+        }
     }
-}
+} 
 
 const spotify_track_data_to_string = async (track_data) => {
     /**
@@ -66,6 +70,39 @@ const spotify_track_data_to_string = async (track_data) => {
     return `${artistNames} - ${trackName}`;
 }
 
+const spotify_get_playlist_data = async(playlist_link, spotify_token) => {
+    /**
+     * Outputs a list [Artist1 - Song]
+     * @param {playlist_link} string link to spotify playlist
+     * @param {spotify_token} string active spotify token
+     */
+    try{
+    const response = await axios.get('https://api.spotify.com/v1/playlists/' + playlist_link.split("/")[playlist_link.split("/").length-1].split("?")[0] + '/tracks', {
+          headers: {
+            Authorization: 'Bearer ' + spotify_token,
+        },
+        json: true,
+      });
+  
+      let songs_list = []
+      
+      response.data.items.forEach(item => {
+        const artistNames = item.track.artists.map((artist) => artist.name).join(', ');
+        const trackName = item.track.name;
+        songs_list.push(`${artistNames} - ${trackName}`)
+      })
+      return songs_list
+    
+    } catch (error) {
+      const errorcode = error.response.data.error.status
+      if(errorcode === 404){
+        return 'Could not find Playlist, Is it public?'
+      } else {
+        throw error
+      }
+    }
+  }
 
 
-module.exports = {spotify_get_new_token, spotify_track_data_to_string, spotify_track_data_get};
+
+module.exports = {spotify_get_new_token, spotify_track_data_to_string, spotify_track_data_get, spotify_get_playlist_data};

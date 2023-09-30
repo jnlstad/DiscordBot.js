@@ -8,7 +8,7 @@ const { Player, useQueue } = require("discord-player")
 const { deployAllCommands } = require('./deploy-commands.js');
 
 // Load .env file
-dotenv.config({ path: 'env_files\\.env' })
+dotenv.config({ path: 'env_files/.env' })
 const TOKEN = process.env.TOKEN;
 
 const client = new Client({ 

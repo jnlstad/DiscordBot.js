@@ -1,13 +1,13 @@
 const { SlashCommandBuilder } = require("@discordjs/builders");
 const { YoutubeExtractor } = require('@discord-player/extractor');
 const { useMainPlayer } = require("discord-player");
-const {spotify_get_new_token, spotify_track_data_to_string, spotify_track_data_get} = require('../functions/spotify_funcs.js');
+const {spotify_get_new_token, spotify_track_data_to_string, spotify_track_data_get, spotify_get_playlist_data} = require('../functions/spotify_funcs.js');
 const fs = require("fs");
 
 
 //Runs once on boot to initialize spotify token
 var spotify_token = '';
-fs.readFile(__dirname + "\\..\\env_files\\spotify_access_token.txt", (err, data) => {
+fs.readFile(__dirname + "/../env_files/spotify_access_token.txt", (err, data) => {
     spotify_token = data.toString();
 })
 
@@ -49,9 +49,22 @@ module.exports = {
             catch (error) {
                 // console.log(error)
             }
+        } else if (query.includes("open.spotify.com/playlist")){
+            try{
+                query = spotify_get_playlist_data(query, spotify_token);
+                if (!query) {
+                    spotify_token = await spotify_get_new_token();
+                }
+            } catch(error) {
+                console.log(error)
+            }
         }
-        let searchResult;
-        try {searchResult = await player.search(query, {requestedBy: interaction.user});
+
+        let searchResult
+
+        if(!typeof(query) === 'Array'){
+        try {
+            searchResult = await player.search(query, {requestedBy: interaction.user});
             } catch (error) {
                 console.log(error)
         }
@@ -69,9 +82,40 @@ module.exports = {
 
                 await interaction.editReply({content:`Loading your Track`, ephemeral: true});
                 setTimeout(() => interaction.deleteReply(), 30 * 100)
+                return;
             } catch (error) {
                 return interaction.followUp({content:`Something went wrong ${error}`, ephemeral: false})
             }
         }
-        
-    }}
+    } else {
+        try {
+            let aQuery = await query;
+            
+            aQuery.forEach(async (song) => {
+                searchResult = await player.search(song, {requestedBy: interaction.user});
+            
+                if (!searchResult || !searchResult.tracks.length){
+                    interaction.followUp({content: `No Results Found, Please try again!`});
+                    return;
+                } else {
+                    try {
+                        console.log('Doing')
+                        await player.play(channel, searchResult, {
+                            nodeOptions: {
+                                metadata: interaction
+                            }
+
+                        });
+                    } catch(error) {
+                        console.log(error)
+                    } 
+                }
+                })
+
+        } catch(error){
+        console.log(error)
+        }
+        //await interaction.editReply({content:`Loading your Tracks`, ephemeral: true});
+        //setTimeout(() => interaction.deleteReply(), 30 * 100)
+    } return interaction.editReply({content:`Loading your Tracks`, ephemeral: true});
+}}
