@@ -5,3 +5,6 @@ tempCodeRunnerFile.python
 /node_modules
 /deprecated_comnmands
 /deprecated_events
+guilds.txt
+env_files/*
+.npm
