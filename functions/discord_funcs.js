@@ -1,4 +1,5 @@
-async function message_delete(message_data, time){
+
+async function message_delete(client, message_data, time){
     /** 
      * Deletes a message, within set time.
      * @param {message_data} Promise with channelId and Id (MessageId)

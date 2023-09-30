@@ -41,5 +41,5 @@ module.exports = {
 
 
         await interaction.reply({content: queue_message, ephemeral: true});
-        setTimeout(() => interaction.deleteReply(), 4 * 100)
+        setTimeout(() => interaction.deleteReply(), 1 * 60 * 100)
     }}

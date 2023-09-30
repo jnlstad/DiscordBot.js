@@ -50,10 +50,14 @@ module.exports = {
                 // console.log(error)
             }
         }
+        let searchResult;
+        try {searchResult = await player.search(query, {requestedBy: interaction.user});
+            } catch (error) {
+                console.log(error)
+        }
 
-        const searchResult = await player.search(query, {requestedBy: interaction.user});
         if (!searchResult || !searchResult.tracks.length){
-            interaction.followUp({content: `No Results Found`});
+            interaction.followUp({content: `No Results Found, Please try again!`});
             return;
         } else {
             try {

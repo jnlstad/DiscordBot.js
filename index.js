@@ -8,7 +8,7 @@ const { Player, useQueue } = require("discord-player")
 const { deployAllCommands } = require('./deploy-commands.js');
 
 // Load .env file
-dotenv.config()
+dotenv.config({ path: 'env_files\\.env' })
 const TOKEN = process.env.TOKEN;
 
 const client = new Client({ 
@@ -69,66 +69,35 @@ const player = new Player(client, {
 })
 
 
-async function message_delete(message_data, time){
-  /** 
-   * Deletes a message, within set time.
-   * @param {message_data} Promise with channelId and Id (MessageId)
-   * @param {time} int in milliseconds
-  */
-  message_data.then( async(data) => {
-    channel = await client.channels.fetch(data.channelId)
-    setTimeout(() => channel.messages.delete(data.id), time)
-  })
-}
-
 
 player.events
   .on('playerStart', (queue, track) => {
     // Emitted when the player starts to play a song
     let channel_data = queue.metadata.channel.send(`Started playing: **${track.title} - ${track.author}**`);
-    message_delete(channel_data, 20 * 1000);
-
-player.events.once('audioTrackAdd', (queue) => {
+    message_delete(client, channel_data, 20 * 1000);
+})
+  .once('audioTrackAdd', (queue) => {
   // leaveOnEnd is set to false, so the player will not leave the channel when the queue is empty
   useQueue(queue.metadata.guildId).options.leaveOnEnd = false;
-});
-
-player.events.on('audioTrackAdd', (queue, track) => {
+})
+  .on('audioTrackAdd', (queue, track) => {
   // Emitted when the player adds a single song to its queue
-  queueEmpty = false;
-  queue.metadata.channel.send(`Track **${track.title} - ${track.author}** queued by **${track.requestedBy.username}**`);
-});
-
-player.events.on('audioTracksAdd', (queue, track) => {
-  queueEmpty = false;
+  channel_data = queue.metadata.channel.send(`Track **${track.title} - ${track.author}** queued by **${track.requestedBy.username}**`);
+  message_delete(client, channel_data, 20 * 1000);
+})
+  .on('audioTracksAdd', (queue, track) => {
   // Emitted when the player adds multiple songs to its queue
-  queue.metadata.channel.send(`Multiple Track's queued`);
-});
-
-player.events.on('playerSkip', (queue, track) => {
+  let channel_data = queue.metadata.channel.send(`Multiple Track's queued`);
+  message_delete(client, channel_data, 20 * 1000);
+})
+  .on('playerSkip', (queue, track) => {
   // Emitted when the audio player fails to load the stream for a song
-  queue.metadata.channel.send(`Skipping **${track.title} - ${track.author}** due to an issue!`);
-});
-
-
-player.events.on('emptyQueue', (queue) => {
-  queueEmpty = true;
-
-  setTimeout(leave, 1 * 60 * 1000)
-  function leave() {
-    if (queueEmpty) {
-      queue.player.destroy();
-      queue.metadata.channel.send(`There was a minute of inactivity, so I quit`);
-      return;
-    } else {
-      return;
-    }
-  }
-});
-
-
-player.events.on('emptyChannel', (queue) => {
+  let channel_data = queue.metadata.channel.send(`Skipping **${track.title} - ${track.author}** due to an issue!`);
+  message_delete(client, channel_data, 20 * 1000);
+})
+  .on('emptyChannel', (queue) => {
   // Emitted when the voice channel has been empty for the set threshold
   // Bot will automatically leave the voice channel with this event
-  queue.metadata.channel.send(`Leaving because I ended up being alone :(`);
+  let channel_data = queue.metadata.channel.send(`Leaving because I ended up being alone :(`);
+  message_delete(client, channel_data, 20 * 1000);
 });
