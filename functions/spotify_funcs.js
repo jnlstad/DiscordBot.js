@@ -101,7 +101,7 @@ const spotify_get_playlist_data = async(playlist_link, spotify_token) => {
       if(errorcode === 404){
         throw [errorcode, `Could not find Playlist, it's either private or it's a bad link`]
       } else {
-        //console.log(error)
+        console.log(error)
       }
     }
 }

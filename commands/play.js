@@ -25,8 +25,7 @@ module.exports = {
             
 	execute: async (interaction) => {
         let global_error = 'Unable to process the song'
-        
-        console.log(spotify_token)
+
         /* Initializes Player */
         const player = useMainPlayer();
         player.extractors.register(YoutubeExtractor);
@@ -62,17 +61,14 @@ module.exports = {
         } else if (query.includes("open.spotify.com/playlist")){
             try{
                 query = await spotify_get_playlist_data(query, spotify_token);
-                console.log(!query, query)
                 if (!query) {
                     spotify_get_new_token().then(async(response) => {
-                        console.log('LOOK AT ME')
                         spotify_token = response
                         query = await spotify_get_playlist_data(query, response);
                         } 
                     )
                 }
             } catch(error) {
-                console.log(typeof(error))
                 if(typeof(error) == 'object'){
                     global_error = `${error[0]} - ${error[1]}`
                 } else {
@@ -97,7 +93,6 @@ module.exports = {
                     return;
                 } else {
                     try {
-                        console.log('Doing')
                         await player.play(channel, searchResult, {
                             nodeOptions: {
                                 metadata: interaction
