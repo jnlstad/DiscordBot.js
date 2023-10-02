@@ -23,7 +23,7 @@ const spotify_get_new_token = async () => {
             json: true,
         });
         await fsPromises.writeFile(__dirname + '/../env_files/spotify_access_token.txt', response.data.access_token);
-        return response.data.access_token;
+        return Promise.resolve(response.data.access_token);
     } catch (error) {
         throw error;
     }
@@ -48,8 +48,11 @@ const spotify_track_data_get = async (link, spotify_token) => {
         // return ''
         const errorcode = error.response.data.error.status
         if(errorcode === 401){
-          throw 'Invalid Spotify Token'
-        // throw error;
+            throw 'Invalid Spotify Token'
+        } else if(errorcode === 404){
+            throw [errorcode, `Could not find song`]
+        } else {
+            console.log(error)
         }
     }
 } 
@@ -96,12 +99,13 @@ const spotify_get_playlist_data = async(playlist_link, spotify_token) => {
     } catch (error) {
       const errorcode = error.response.data.error.status
       if(errorcode === 404){
-        return 'Could not find Playlist, Is it public?'
+        throw [errorcode, `Could not find Playlist, it's either private or it's a bad link`]
       } else {
-        throw error
+        //console.log(error)
       }
     }
-  }
+}
+
 
 
 

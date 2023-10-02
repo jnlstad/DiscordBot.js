@@ -80,14 +80,14 @@ player.events
   // leaveOnEnd is set to false, so the player will not leave the channel when the queue is empty
   useQueue(queue.metadata.guildId).options.leaveOnEnd = false;
 })
-  .on('audioTrackAdd', (queue, track) => {
-  // Emitted when the player adds a single song to its queue
-  channel_data = queue.metadata.channel.send(`Track **${track.title} - ${track.author}** queued by **${track.requestedBy.username}**`);
-  message_delete(client, channel_data, 20 * 1000);
-})
+//   .on('audioTrackAdd', (queue, track) => {
+//   // Emitted when the player adds a single song to its queue
+//   channel_data = queue.metadata.channel.send(`Track **${track.title} - ${track.author}** queued by **${track.requestedBy.username}**`);
+//   message_delete(client, channel_data, 20 * 1000);
+// })
   .on('audioTracksAdd', (queue, track) => {
   // Emitted when the player adds multiple songs to its queue
-  let channel_data = queue.metadata.channel.send(`Multiple Track's queued`);
+  let channel_data = queue.metadata.channel.send(`Multiple Tracks queued`);
   message_delete(client, channel_data, 20 * 1000);
 })
   .on('playerSkip', (queue, track) => {

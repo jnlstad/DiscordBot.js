@@ -11,4 +11,6 @@ module.exports = {
         const queue = useQueue(interaction.guildId);
         queue.tracks.shuffle()
         await interaction.reply({content:`shuffled the queue`, ephemeral: false})
+        setTimeout(() => interaction.deleteReply(), 20 * 1000)
+        return;
     }}

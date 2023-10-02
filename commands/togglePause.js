@@ -13,8 +13,12 @@ module.exports = {
 
         if (queue.node.isPaused()) {
             await interaction.reply({content: "Player is now paused", ephemeral: false});
+            setTimeout(() => interaction.deleteReply(), 20 * 1000)
+            return;
         } else {
             await interaction.reply({content: "Player is now unpaused", ephemeral: false});
+            setTimeout(() => interaction.deleteReply(), 20 * 1000)
+            return;
         }
     }
 }

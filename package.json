@@ -26,11 +26,10 @@
     "discord-player": "^6.1.1",
     "discord.js": "^14.8.0",
     "dotenv": "^16.0.3",
+    "ffmpeg": "^0.0.4",
     "ffmpeg-static": "^5.1.0",
     "metadata": "^0.1.0",
     "node-opus": "^0.3.3",
-    "opus": "^0.0.0",
-    "opusscript": "^0.0.8",
     "ytdl-core": "^4.11.3"
   }
 }

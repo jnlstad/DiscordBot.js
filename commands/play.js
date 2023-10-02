@@ -24,6 +24,9 @@ module.exports = {
 		),
             
 	execute: async (interaction) => {
+        let global_error = 'Unable to process the song'
+        
+        console.log(spotify_token)
         /* Initializes Player */
         const player = useMainPlayer();
         player.extractors.register(YoutubeExtractor);
@@ -31,7 +34,7 @@ module.exports = {
 		if (!channel) return interaction.reply("You need to be in a Voice Channel to play a song.");
         let query = interaction.options.getString("query", true)
         
-        await interaction.deferReply({ephemeral: true});
+        await interaction.deferReply({ephemeral: false});
         
 
         /** Runs if a song is a spotify.com/track link */
@@ -41,61 +44,56 @@ module.exports = {
                 query = await spotify_track_data_to_string(response);
                 
                 if (!query) {
-                    spotify_token = await spotify_get_new_token();
-                    response = await spotify_track_data_get(query, spotify_token); // This function doesn't wait, so it does not get the token with it.
-                    query = await spotify_track_data_to_string(response);
+                    spotify_get_new_token().then(async(response) => {
+                        spotify_token = response
+                        response = await spotify_track_data_get(query, spotify_token); // This function doesn't wait, so it does not get the token with it.
+                        query = await spotify_track_data_to_string(response);
+                    })
+                    
                 }
             } 
             catch (error) {
-                // console.log(error)
+                if(typeof(error) == 'Array'){
+                    global_error = `${error[0]} - ${error[1]}`
+                } else {
+                    console.log(error)
+                }   
             }
         } else if (query.includes("open.spotify.com/playlist")){
             try{
-                query = spotify_get_playlist_data(query, spotify_token);
+                query = await spotify_get_playlist_data(query, spotify_token);
+                console.log(!query, query)
                 if (!query) {
-                    spotify_token = await spotify_get_new_token();
+                    spotify_get_new_token().then(async(response) => {
+                        console.log('LOOK AT ME')
+                        spotify_token = response
+                        query = await spotify_get_playlist_data(query, response);
+                        } 
+                    )
                 }
             } catch(error) {
-                console.log(error)
+                console.log(typeof(error))
+                if(typeof(error) == 'object'){
+                    global_error = `${error[0]} - ${error[1]}`
+                } else {
+                    console.log(error)
+                }
             }
         }
 
+        
+        
         let searchResult
 
-        if(!typeof(query) === 'Array'){
-        try {
-            searchResult = await player.search(query, {requestedBy: interaction.user});
-            } catch (error) {
-                console.log(error)
-        }
-
-        if (!searchResult || !searchResult.tracks.length){
-            interaction.followUp({content: `No Results Found, Please try again!`});
-            return;
-        } else {
-            try {
-                await player.play(channel, searchResult, {
-                    nodeOptions: {
-                        metadata: interaction
-                    }
-                });
-
-                await interaction.editReply({content:`Loading your Track`, ephemeral: true});
-                setTimeout(() => interaction.deleteReply(), 30 * 100)
-                return;
-            } catch (error) {
-                return interaction.followUp({content:`Something went wrong ${error}`, ephemeral: false})
-            }
-        }
-    } else {
+        if (typeof(query) === 'object'){
         try {
             let aQuery = await query;
-            
             aQuery.forEach(async (song) => {
                 searchResult = await player.search(song, {requestedBy: interaction.user});
-            
+
                 if (!searchResult || !searchResult.tracks.length){
                     interaction.followUp({content: `No Results Found, Please try again!`});
+                    setTimeout(() => interaction.deleteReply(), 30 * 1000)
                     return;
                 } else {
                     try {
@@ -112,10 +110,40 @@ module.exports = {
                 }
                 })
 
-        } catch(error){
-        console.log(error)
+        	} catch(error){
+        	console.log(error)
+       	} 
+        await interaction.editReply({content:`Added all your tracks to the queue`, ephemeral: false});
+        setTimeout(() => interaction.deleteReply(), 30 * 1000)
+        return;
+    }
+
+    // One Song
+        else if(typeof(query) === 'string'){
+        try {
+            searchResult = await player.search(query, {requestedBy: interaction.user});
+            } catch (error) {
+                console.log(error)
         }
-        //await interaction.editReply({content:`Loading your Tracks`, ephemeral: true});
-        //setTimeout(() => interaction.deleteReply(), 30 * 100)
-    } return interaction.editReply({content:`Loading your Tracks`, ephemeral: true});
-}}
+        console.log(searchResult)
+        if (!searchResult || !searchResult.tracks.length){
+            interaction.followUp({content: `No Results Found, Please try again!`});
+            return;
+        } else {
+            try {
+                await player.play(channel, searchResult, {
+                    nodeOptions: {
+                        metadata: interaction
+                    }
+                });
+
+                await interaction.editReply({content:`Added **${searchResult._data.query}** to the queue`, ephemeral: false});
+                setTimeout(() => interaction.deleteReply(), 30 * 1000)
+                return;
+            } catch (error) {
+                return interaction.followUp({content:`Something went wrong ${error}`, ephemeral: false})
+            }
+        }
+    } return interaction.followUp({content:`${global_error}`, ephemeral: false})
+  }
+} 
