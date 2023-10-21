@@ -101,12 +101,14 @@ module.exports = {
                         });
                     } catch(error) {
                         console.log(error)
+                        return;
                     } 
                 }
                 })
 
         	} catch(error){
         	console.log(error)
+            return;
        	} 
         await interaction.editReply({content:`Added all your tracks to the queue`, ephemeral: false});
         setTimeout(() => interaction.deleteReply(), 30 * 1000)
@@ -120,7 +122,6 @@ module.exports = {
             } catch (error) {
                 console.log(error)
         }
-        console.log(searchResult)
         if (!searchResult || !searchResult.tracks.length){
             interaction.followUp({content: `No Results Found, Please try again!`});
             return;
@@ -131,8 +132,7 @@ module.exports = {
                         metadata: interaction
                     }
                 });
-
-                await interaction.editReply({content:`Added **${searchResult._data.query}** to the queue`, ephemeral: false});
+                await interaction.editReply({content:`Added **${searchResult._data.tracks[0].title}** to the queue`, ephemeral: false});
                 setTimeout(() => interaction.deleteReply(), 30 * 1000)
                 return;
             } catch (error) {
