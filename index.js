@@ -101,3 +101,14 @@ player.events
   let channel_data = queue.metadata.channel.send(`Leaving because I ended up being alone :(`);
   message_delete(client, channel_data, 20 * 1000);
 });
+
+client.once("ready", () => {
+  client.user.setPresence({
+    activities: [{
+      name: 'Apex Legends',
+      type: ActivityType.Competing,
+    }],
+    status: 'online'
+  })
+
+})
