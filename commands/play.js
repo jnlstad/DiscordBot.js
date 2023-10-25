@@ -162,6 +162,9 @@ module.exports = {
                 return interaction.followUp({content:`Something went wrong ${error}`, ephemeral: false})
             }
         }
-    } return interaction.followUp({content:`${global_error}`, ephemeral: false})
+    } 
+    await interaction.followUp({content:`${global_error}`, ephemeral: false})
+    setTimeout(() => interaction.deleteReply(), 30 * 1000)
+    return;
   }
 } 
