@@ -110,5 +110,4 @@ client.once("ready", () => {
     }],
     status: 'online'
   })
-
 })

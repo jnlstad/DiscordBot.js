@@ -1,7 +1,7 @@
 const { SlashCommandBuilder } = require("@discordjs/builders");
 const { YoutubeExtractor } = require('@discord-player/extractor');
 const { useMainPlayer } = require("discord-player");
-const {spotify_get_new_token, spotify_track_data_to_string, spotify_track_data_get, spotify_get_playlist_data} = require('../functions/spotify_funcs.js');
+const {spotify_get_new_token, spotify_track_data_to_string, spotify_track_data_get, spotify_get_playlist_data, spotify_get_album_data} = require('../functions/spotify_funcs.js');
 const fs = require("fs");
 
 
@@ -41,7 +41,7 @@ module.exports = {
             try {
                 let response = await spotify_track_data_get(query, spotify_token);
                 query = await spotify_track_data_to_string(response);
-                
+                console.log(query)
                 if (!query) {
                     spotify_get_new_token().then(async(response) => {
                         spotify_token = response
@@ -52,13 +52,15 @@ module.exports = {
                 }
             } 
             catch (error) {
-                if(typeof(error) == 'Array'){
+                console.log(error)
+                if(typeof(error) == 'object'){
                     global_error = `${error[0]} - ${error[1]}`
                 } else {
                     console.log(error)
                 }   
             }
-        } else if (query.includes("open.spotify.com/playlist")){
+        } 
+        else if (query.includes("open.spotify.com/playlist")){
             try{
                 query = await spotify_get_playlist_data(query, spotify_token);
                 if (!query) {
@@ -76,11 +78,32 @@ module.exports = {
                 }
             }
         }
+        else if (query.includes("open.spotify.com/album")){
+            try{
+                query = await spotify_get_album_data(query, spotify_token);
+                if (!query) {
+                    spotify_get_new_token().then(async(response) => {
+                        spotify_token = response
+                        query = await spotify_get_album_data(query, response);
+                        } 
+                    )
+                }
+            } catch(error) {
+                if(typeof(error) == 'object'){
+                    console.log(error)
+                    global_error = `${error[0]} - ${error[1]}`
+                } else {
+                    console.log(error)
+                }
+            }
+        } else if (query.includes("spotify.com")) {
+            global_error = 'This link is not supported';
+            query = null;
+        }       
 
         
         
         let searchResult
-
         if (typeof(query) === 'object'){
         try {
             let aQuery = await query;

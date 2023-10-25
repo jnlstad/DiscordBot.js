@@ -48,7 +48,7 @@ const spotify_track_data_get = async (link, spotify_token) => {
         // return ''
         const errorcode = error.response.data.error.status
         if(errorcode === 401){
-            throw 'Invalid Spotify Token'
+            console.log('Invalid Spotify Token')
         } else if(errorcode === 404){
             throw [errorcode, `Could not find song`]
         } else {
@@ -73,14 +73,15 @@ const spotify_track_data_to_string = async (track_data) => {
     return `${artistNames} - ${trackName}`;
 }
 
-const spotify_get_playlist_data = async(playlist_link, spotify_token) => {
+const spotify_get_playlist_data = async(link, spotify_token) => {
     /**
      * Outputs a list [Artist1 - Song]
-     * @param {playlist_link} string link to spotify playlist
+     * @param {link} string link to spotify playlist
      * @param {spotify_token} string active spotify token
      */
+    const id = link.split("/")[link.split("/").length-1].split("?")[0]
     try{
-    const response = await axios.get('https://api.spotify.com/v1/playlists/' + playlist_link.split("/")[playlist_link.split("/").length-1].split("?")[0] + '/tracks', {
+    const response = await axios.get('https://api.spotify.com/v1/playlists/' + id + '/tracks', {
           headers: {
             Authorization: 'Bearer ' + spotify_token,
         },
@@ -106,7 +107,39 @@ const spotify_get_playlist_data = async(playlist_link, spotify_token) => {
     }
 }
 
+const spotify_get_album_data = async(link, spotify_token) => {
+    /**
+     * Outputs a list [Artist1 - Song]
+     * @param {link} string link to spotify playlist
+     * @param {spotify_token} string active spotify token
+     */
+    const id = link.split("/")[link.split("/").length-1].split("?")[0]
+    try{
+    const response = await axios.get('https://api.spotify.com/v1/albums/' + id + '/tracks', {
+          headers: {
+            Authorization: 'Bearer ' + spotify_token,
+        },
+        json: true,
+      });
+      let songs_list = []
+      response.data.items.forEach(item => {
+        const artistNames = item.artists.map((artist) => artist.name).join(', ');
+        const trackName = item.name;
+        songs_list.push(`${artistNames} - ${trackName}`)
+      })
+      return songs_list
+    
+    } catch (error) {
+        const errorcode = error.response.status
+        if(errorcode === 404){
+            throw [errorcode, `Could not find Album, it's either private or it's a bad link`]
+    } else {
+        console.log(error)
+      }
+    }
+}
 
 
 
-module.exports = {spotify_get_new_token, spotify_track_data_to_string, spotify_track_data_get, spotify_get_playlist_data};
+
+module.exports = {spotify_get_new_token, spotify_track_data_to_string, spotify_track_data_get, spotify_get_playlist_data, spotify_get_album_data};
