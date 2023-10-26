@@ -35,7 +35,6 @@ module.exports = {
         await interaction.deferReply({ephemeral: false});
         
         const original_query = query;
-        console.log(original_query)
         /** Runs if a song is a spotify.com/track link */
         if (query.includes("open.spotify.com/track")) {
             try {
