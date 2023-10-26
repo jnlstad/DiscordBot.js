@@ -110,4 +110,13 @@ client.once("ready", () => {
     }],
     status: 'online'
   })
+  
+  //Log which guilds the bot is currently a member of
+  let data =''
+  client.guilds.cache.forEach((guild) => {
+    data = data + guild.name + ' - ' + guild.id + '\n'
+  })
+  fs.writeFile('guilds.txt', data, (err) => {
+
+  })
 })
