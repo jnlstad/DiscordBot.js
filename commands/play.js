@@ -84,8 +84,8 @@ module.exports = {
                 }
             }
 
-        } else if (query.includes("spotify.com")) {
-            global_error = 'This link is not supported';
+        } else if (query.includes(".com") && !query.includes("youtube.com")) {
+            global_error = 'This link is not supported ' + query;
             query = null;
         }       
 
