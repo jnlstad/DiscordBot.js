@@ -1,7 +1,7 @@
 const { SlashCommandBuilder } = require("@discordjs/builders");
 const { YoutubeExtractor } = require('@discord-player/extractor');
 const { useMainPlayer } = require("discord-player");
-const {spotify_get_new_token, spotify_track_data_to_string, spotify_track_data_get, spotify_get_playlist_data, spotify_get_album_data} = require('../functions/spotify_funcs.js');
+const {spotify_get_new_token, spotify_track_data_get, spotify_get_playlist_data, spotify_get_album_data} = require('../functions/spotify_funcs.js');
 const fs = require("fs");
 
 
@@ -10,7 +10,6 @@ var spotify_token = '';
 fs.readFile(__dirname + "/../env_files/spotify_access_token.txt", (err, data) => {
     spotify_token = data.toString();
 })
-
 
 module.exports = {
 	data: new SlashCommandBuilder()
@@ -35,43 +34,35 @@ module.exports = {
         
         await interaction.deferReply({ephemeral: false});
         
-
+        const original_query = query;
+        console.log(original_query)
         /** Runs if a song is a spotify.com/track link */
         if (query.includes("open.spotify.com/track")) {
             try {
-                let response = await spotify_track_data_get(query, spotify_token);
-                query = await spotify_track_data_to_string(response);
-                console.log(query)
-                if (!query) {
-                    spotify_get_new_token().then(async(response) => {
-                        spotify_token = response
-                        response = await spotify_track_data_get(query, spotify_token); // This function doesn't wait, so it does not get the token with it.
-                        query = await spotify_track_data_to_string(response);
-                    })
-                    
+                query = await spotify_track_data_get(query, spotify_token);
+                if (original_query === query) {
+                    spotify_token = await spotify_get_new_token();
+                    query = await spotify_track_data_get(original_query, spotify_token);
+                    console.log('Generated New Spotify Token')
                 }
-            } 
-            catch (error) {
-                console.log(error)
-                if(typeof(error) == 'object'){
+            } catch(error) {
+                if(error instanceof Array){
                     global_error = `${error[0]} - ${error[1]}`
                 } else {
                     console.log(error)
-                }   
+                }
             }
         } 
         else if (query.includes("open.spotify.com/playlist")){
             try{
                 query = await spotify_get_playlist_data(query, spotify_token);
-                if (!query) {
-                    spotify_get_new_token().then(async(response) => {
-                        spotify_token = response
-                        query = await spotify_get_playlist_data(query, response);
-                        } 
-                    )
+                if (original_query === query) {
+                    spotify_token = await spotify_get_new_token();
+                    query = await spotify_get_playlist_data(original_query, spotify_token);
+                    console.log('Generated New Spotify Token')
                 }
             } catch(error) {
-                if(typeof(error) == 'object'){
+                if(error instanceof Array){
                     global_error = `${error[0]} - ${error[1]}`
                 } else {
                     console.log(error)
@@ -81,30 +72,27 @@ module.exports = {
         else if (query.includes("open.spotify.com/album")){
             try{
                 query = await spotify_get_album_data(query, spotify_token);
-                if (!query) {
-                    spotify_get_new_token().then(async(response) => {
-                        spotify_token = response
-                        query = await spotify_get_album_data(query, response);
-                        } 
-                    )
+                if (original_query === query) {
+                    spotify_token = await spotify_get_new_token();
+                    query = await spotify_get_album_data(original_query, spotify_token);
+                    console.log('Generated New Spotify Token')
                 }
             } catch(error) {
-                if(typeof(error) == 'object'){
-                    console.log(error)
+                if(error instanceof Array){
                     global_error = `${error[0]} - ${error[1]}`
                 } else {
                     console.log(error)
                 }
             }
+
         } else if (query.includes("spotify.com")) {
             global_error = 'This link is not supported';
             query = null;
         }       
 
-        
-        
+
         let searchResult
-        if (typeof(query) === 'object'){
+        if (query instanceof Array){
         try {
             let aQuery = await query;
             aQuery.forEach(async (song) => {
@@ -139,7 +127,7 @@ module.exports = {
     }
 
     // One Song
-        else if(typeof(query) === 'string'){
+        else if(typeof(query) === 'string' && query.length > 0){
         try {
             searchResult = await player.search(query, {requestedBy: interaction.user});
             } catch (error) {
@@ -156,7 +144,7 @@ module.exports = {
                     }
                 });
                 await interaction.editReply({content:`Added **${searchResult._data.tracks[0].title}** to the queue`, ephemeral: false});
-                setTimeout(() => interaction.deleteReply(), 30 * 1000)
+                setTimeout(() => interaction.deleteReply(), 15 * 1000)
                 return;
             } catch (error) {
                 return interaction.followUp({content:`Something went wrong ${error}`, ephemeral: false})

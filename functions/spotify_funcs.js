@@ -30,7 +30,6 @@ const spotify_get_new_token = async () => {
 }
 
 
-
 const spotify_track_data_get = async (link, spotify_token) => {
     /**
     Returns information about a track stored in a JSON format 
@@ -43,35 +42,26 @@ const spotify_track_data_get = async (link, spotify_token) => {
                 Authorization: 'Bearer ' + spotify_token,
             },
         });
-        return response;
+
+        const artistNames = response.data.artists.map((artist) => artist.name).join(', ');
+        const trackName = response.data.name;
+
+        return `${artistNames} - ${trackName}`;
     } catch (error) {
-        // return ''
-        const errorcode = error.response.data.error.status
+        console.log(error)
+        const errorcode = error.response.status
         if(errorcode === 401){
             console.log('Invalid Spotify Token')
+            return link
         } else if(errorcode === 404){
             throw [errorcode, `Could not find song`]
         } else {
             console.log(error)
+            return '';
         }
     }
 } 
 
-const spotify_track_data_to_string = async (track_data) => {
-    /**
-    Returns a string = "Artist1, Artist2 - Song Name"
-    @param {track_data} JSON information about track
-    */
-    
-    if (!track_data || track_data.length < 1) {
-        return '';
-    }
-
-    const artistNames = track_data.data.artists.map((artist) => artist.name).join(', ');
-    const trackName = track_data.data.name;
-
-    return `${artistNames} - ${trackName}`;
-}
 
 const spotify_get_playlist_data = async(link, spotify_token) => {
     /**
@@ -85,7 +75,6 @@ const spotify_get_playlist_data = async(link, spotify_token) => {
           headers: {
             Authorization: 'Bearer ' + spotify_token,
         },
-        json: true,
       });
   
       let songs_list = []
@@ -101,11 +90,15 @@ const spotify_get_playlist_data = async(link, spotify_token) => {
       const errorcode = error.response.status
       if(errorcode === 404){
         throw [errorcode, `Could not find Playlist, it's either private or it's a bad link`]
+      }
+      else if(errorcode === 401){
+        return link
       } else {
         console.log(error)
       }
     }
 }
+
 
 const spotify_get_album_data = async(link, spotify_token) => {
     /**
@@ -119,8 +112,8 @@ const spotify_get_album_data = async(link, spotify_token) => {
           headers: {
             Authorization: 'Bearer ' + spotify_token,
         },
-        json: true,
       });
+      
       let songs_list = []
       response.data.items.forEach(item => {
         const artistNames = item.artists.map((artist) => artist.name).join(', ');
@@ -133,13 +126,16 @@ const spotify_get_album_data = async(link, spotify_token) => {
         const errorcode = error.response.status
         if(errorcode === 404){
             throw [errorcode, `Could not find Album, it's either private or it's a bad link`]
-    } else {
-        console.log(error)
-      }
+        } else if(errorcode === 401){
+            console.log('Invalid spotify Token')
+            return link
+        } else {
+          console.log(error)
+        }
     }
 }
 
 
 
 
-module.exports = {spotify_get_new_token, spotify_track_data_to_string, spotify_track_data_get, spotify_get_playlist_data, spotify_get_album_data};
+module.exports = {spotify_get_new_token, spotify_track_data_get, spotify_get_playlist_data, spotify_get_album_data};
