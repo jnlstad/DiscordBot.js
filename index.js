@@ -121,14 +121,14 @@ client.once("ready", () => {
 
   data =''
   client.guilds.cache.forEach((guild) => {
-    data = guild + '\n'
+    data = data + guild + '\n'
   })
   fs.writeFile('cache_guilds.txt', data, (err) => {
   })
 
   data =''
   client.users.cache.forEach((user) => {
-    data = user + '\n'
+    data = data + user + '\n'
   })
   fs.writeFile('cache_users.txt', data, (err) => {
   })
