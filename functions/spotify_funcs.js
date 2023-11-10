@@ -48,7 +48,6 @@ const spotify_track_data_get = async (link, spotify_token) => {
 
         return `${artistNames} - ${trackName}`;
     } catch (error) {
-        console.log(error)
         const errorcode = error.response.status
         if(errorcode === 401){
             console.log('Invalid Spotify Token')
