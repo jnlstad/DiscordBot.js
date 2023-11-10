@@ -117,6 +117,19 @@ client.once("ready", () => {
     data = data + guild.name + ' - ' + guild.id + '\n'
   })
   fs.writeFile('guilds.txt', data, (err) => {
+  })
 
+  data =''
+  client.guilds.cache.forEach((guild) => {
+    data = guild + '\n'
+  })
+  fs.writeFile('cache_guilds.txt', data, (err) => {
+  })
+
+  data =''
+  client.users.cache.forEach((user) => {
+    data = user + '\n'
+  })
+  fs.writeFile('cache_users.txt', data, (err) => {
   })
 })
