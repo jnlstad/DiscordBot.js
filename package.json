@@ -21,6 +21,7 @@
     "@discordjs/opus": "^0.9.0",
     "@discordjs/rest": "^1.6.0",
     "@discordjs/voice": "^0.15.0",
+    "@distube/ytdl-core": "^4.13.2",
     "axios": "^1.5.0",
     "discord-api-types": "^0.37.37",
     "discord-player": "^6.1.1",
@@ -29,7 +30,6 @@
     "ffmpeg": "^0.0.4",
     "ffmpeg-static": "^5.1.0",
     "metadata": "^0.1.0",
-    "node-opus": "^0.3.3",
-    "ytdl-core": "^4.11.3"
+    "node-opus": "^0.3.3"
   }
 }

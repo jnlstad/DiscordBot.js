@@ -8,3 +8,5 @@ tempCodeRunnerFile.python
 guilds.txt
 env_files/*
 .npm
+cache_guilds.txt
+cache_users.txt

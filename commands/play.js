@@ -98,7 +98,7 @@ module.exports = {
                 searchResult = await player.search(song, {requestedBy: interaction.user});
 
                 if (!searchResult || !searchResult.tracks.length){
-                    interaction.followUp({content: `No Results Found, Please try again!`});
+                    //interaction.followUp({content: `No Results Found, Please try again!`});
                     setTimeout(() => interaction.deleteReply(), 30 * 1000)
                     return;
                 } else {
