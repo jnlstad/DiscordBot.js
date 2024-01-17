@@ -133,7 +133,7 @@ module.exports = {
                 console.log(error)
         }
         if (!searchResult || !searchResult.tracks.length){
-            interaction.followUp({content: `No Results Found, Please try again!`});
+            //interaction.followUp({content: `No Results Found, Please try again!`});
             return;
         } else {
             try {
